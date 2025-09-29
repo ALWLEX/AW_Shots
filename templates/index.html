@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AW Shots  - AWLABS SANZHAR-MARAL</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-camera"></i>
+                <span data-lang="en">AW Shots</span>
+                <span data-lang="ru" style="display: none;">AW Shots</span>
+            </div>
+            <div class="language-switcher">
+                <button class="lang-btn active" onclick="switchLanguage('en')">EN</button>
+                <button class="lang-btn" onclick="switchLanguage('ru')">RU</button>
+            </div>
+        </header>
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <!-- File Operations -->
+            <div class="sidebar-section">
+                <div class="section-title" data-lang="en">File</div>
+                <div class="section-title" data-lang="ru" style="display: none;">Файл</div>
+                <div class="tool-grid">
+                    <button class="tool-btn" onclick="openUpload()">
+                        <i class="fas fa-upload"></i>
+                        <span data-lang="en">Upload</span>
+                        <span data-lang="ru" style="display: none;">Загрузить</span>
+                    </button>
+                    <button class="tool-btn" onclick="startWebcam()" style="background: var(--warning-color);">
+                        <i class="fas fa-video"></i>
+                        <span data-lang="en">Webcam</span>
+                        <span data-lang="ru" style="display: none;">Камера</span>
+                    </button>
+                    <button class="tool-btn" onclick="saveImage()">
+                        <i class="fas fa-save"></i>
+                        <span data-lang="en">Save</span>
+                        <span data-lang="ru" style="display: none;">Сохранить</span>
+                    </button>
+                    <button class="tool-btn" onclick="resetAll()">
+                        <i class="fas fa-trash"></i>
+                        <span data-lang="en">Reset</span>
+                        <span data-lang="ru" style="display: none;">Сброс</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tools -->
+            <div class="sidebar-section">
+                <div class="section-title" data-lang="en">Tools</div>
+                <div class="section-title" data-lang="ru" style="display: none;">Инструменты</div>
+                <div class="tool-grid">
+                    <button class="tool-btn active" onclick="selectTool('select')">
+                        <i class="fas fa-mouse-pointer"></i>
+                        <span data-lang="en">Select</span>
+                        <span data-lang="ru" style="display: none;">Выбор</span>
+                    </button>
+                    <button class="tool-btn" onclick="selectTool('brush')">
+                        <i class="fas fa-paint-brush"></i>
+                        <span data-lang="en">Brush</span>
+                        <span data-lang="ru" style="display: none;">Кисть</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Drawing -->
+            <div class="sidebar-section">
+                <div class="section-title" data-lang="en">Drawing</div>
+                <div class="section-title" data-lang="ru" style="display: none;">Рисование</div>
+
+                <div class="toggle-label">
+                    <span data-lang="en">Drawing Mode</span>
+                    <span data-lang="ru" style="display: none;">Режим рисования</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" onchange="toggleDrawingMode()">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="color-picker-container">
+                    <div class="color-display" id="colorDisplay" style="background: #ffffff;" onclick="showColorPicker()"></div>
+                    <div class="color-inputs">
+                        <input type="text" class="color-input" id="colorHex" placeholder="#FFFFFF" value="#FFFFFF">
+                        <input type="number" class="color-input" id="brushSize" placeholder="Size" value="5" min="1" max="50">
+                    </div>
+                </div>
+
+                <div class="brush-preview" id="brushPreview"></div>
+
+                <div class="tool-grid" style="margin-top: 10px;">
+                    <button class="tool-btn" onclick="showDrawingModal('rectangle')">
+                        <i class="fas fa-square"></i>
+                        <span data-lang="en">Rectangle</span>
+                        <span data-lang="ru" style="display: none;">Прямоугольник</span>
+                    </button>
+                    <button class="tool-btn" onclick="showDrawingModal('circle')">
+                        <i class="fas fa-circle"></i>
+                        <span data-lang="en">Circle</span>
+                        <span data-lang="ru" style="display: none;">Круг</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Adjustments -->
+            <div class="sidebar-section">
+                <div class="section-title" data-lang="en">Adjustments</div>
+                <div class="section-title" data-lang="ru" style="display: none;">Коррекции</div>
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span data-lang="en">Brightness</span>
+                        <span data-lang="ru" style="display: none;">Яркость</span>
+                        <span id="brightnessValue">0</span>
+                    </div>
+                    <input type="range" class="slider" id="brightness" min="-100" max="100" value="0">
+                </div>
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span data-lang="en">Contrast</span>
+                        <span data-lang="ru" style="display: none;">Контраст</span>
+                        <span id="contrastValue">0</span>
+                    </div>
+                    <input type="range" class="slider" id="contrast" min="-100" max="100" value="0">
+                </div>
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span data-lang="en">Saturation</span>
+                        <span data-lang="ru" style="display: none;">Насыщенность</span>
+                        <span id="saturationValue">0</span>
+                    </div>
+                    <input type="range" class="slider" id="saturation" min="-100" max="100" value="0">
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="sidebar-section">
+                <div class="section-title" data-lang="en">Filters & Effects</div>
+                <div class="section-title" data-lang="ru" style="display: none;">Фильтры и Эффекты</div>
+                <div class="tool-grid">
+                    <button class="tool-btn" onclick="applyFilter('grayscale')">
+                        <i class="fas fa-moon"></i>
+                        <span data-lang="en">Grayscale</span>
+                        <span data-lang="ru" style="display: none;">Ч/Б</span>
+                    </button>
+                    <button class="tool-btn" onclick="applyFilter('sepia')">
+                        <i class="fas fa-sun"></i>
+                        <span data-lang="en">Sepia</span>
+                        <span data-lang="ru" style="display: none;">Сепия</span>
+                    </button>
+                    <button class="tool-btn" onclick="applyFilter('negative')">
+                        <i class="fas fa-adjust"></i>
+                        <span data-lang="en">Negative</span>
+                        <span data-lang="ru" style="display: none;">Негатив</span>
+                    </button>
+                    <button class="tool-btn" onclick="applyFilter('blur')">
+                        <i class="fas fa-blur"></i>
+                        <span data-lang="en">Blur</span>
+                        <span data-lang="ru" style="display: none;">Размытие</span>
+                    </button>
+                    <button class="tool-btn" onclick="applyFilter('sharpen')">
+                        <i class="fas fa-bolt"></i>
+                        <span data-lang="en">Sharpen</span>
+                        <span data-lang="ru" style="display: none;">Резкость</span>
+                    </button>
+                    <button class="tool-btn" onclick="applyColorOverlay()">
+                        <i class="fas fa-fill-drip"></i>
+                        <span data-lang="en">Color Overlay</span>
+                        <span data-lang="ru" style="display: none;">Наложение</span>
+                    </button>
+                    <button class="tool-btn" onclick="showEdgeDetectionModal()">
+                        <i class="fas fa-draw-polygon"></i>
+                        <span data-lang="en">Edge Detect</span>
+                        <span data-lang="ru" style="display: none;">Границы</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Transform -->
+            <div class="sidebar-section">
+                <div class="section-title" data-lang="en">Transform</div>
+                <div class="section-title" data-lang="ru" style="display: none;">Трансформация</div>
+                <div class="tool-grid">
+                    <button class="tool-btn" onclick="showTransformModal('rotate')">
+                        <i class="fas fa-redo"></i>
+                        <span data-lang="en">Rotate</span>
+                        <span data-lang="ru" style="display: none;">Поворот</span>
+                    </button>
+                    <button class="tool-btn" onclick="showTransformModal('resize')">
+                        <i class="fas fa-expand"></i>
+                        <span data-lang="en">Resize</span>
+                        <span data-lang="ru" style="display: none;">Размер</span>
+                    </button>
+                    <button class="tool-btn" onclick="showTransformModal('crop')">
+                        <i class="fas fa-crop"></i>
+                        <span data-lang="en">Crop</span>
+                        <span data-lang="ru" style="display: none;">Обрезка</span>
+                    </button>
+                    <button class="tool-btn" onclick="applyTransformation('flip_h')">
+                        <i class="fas fa-arrows-alt-h"></i>
+                        <span data-lang="en">Flip H</span>
+                        <span data-lang="ru" style="display: none;">Отразить Г</span>
+                    </button>
+                    <button class="tool-btn" onclick="applyTransformation('flip_v')">
+                        <i class="fas fa-arrows-alt-v"></i>
+                        <span data-lang="en">Flip V</span>
+                        <span data-lang="ru" style="display: none;">Отразить В</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- AI Tools -->
+            <div class="sidebar-section">
+    <div class="section-title" data-lang="en">AI Tools</div>
+    <div class="section-title" data-lang="ru" style="display: none;">AI Инструменты</div>
+
+    <div class="toggle-label">
+        <span data-lang="en">Classification</span>
+        <span data-lang="ru" style="display: none;">Классификация</span>
+        <label class="toggle-switch">
+            <input type="checkbox" id="classificationToggleInput" onchange="toggleClassification()">
+            <span class="toggle-slider"></span>
+        </label>
+    </div>
+
+
+    <div class="tool-grid" style="margin-top: 10px;">
+        <button class="tool-btn" onclick="detectFaces()">
+            <i class="fas fa-user"></i>
+            <span data-lang="en">Detect Faces</span>
+            <span data-lang="ru" style="display: none;">Найти лица</span>
+        </button>
+        <button class="tool-btn" onclick="zoomFace()">
+            <i class="fas fa-search-plus"></i>
+            <span data-lang="en">Zoom Face</span>
+            <span data-lang="ru" style="display: none;">Увеличить лицо</span>
+        </button>
+    </div>
+</div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Upload Section -->
+            <div class="upload-section" id="uploadArea" onclick="openFilePicker()">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <h3 data-lang="en">Click or drag & drop to upload image</h3>
+                <h3 data-lang="ru" style="display: none;">Нажмите или перетащите изображение</h3>
+                <p data-lang="en">Supports JPG, PNG, WebP</p>
+                <p data-lang="ru" style="display: none;">Поддерживает JPG, PNG, WebP</p>
+                <input type="file" id="fileInput" accept="image/*" style="display: none;">
+            </div>
+
+          <!-- Webcam Section - Simple version -->
+<div class="webcam-container" id="webcamContainer" style="display: none;">
+    <div style="text-align: center; margin-bottom: 15px;">
+        <h4>📷 AW Shots Camera</h4>
+        <p style="color: var(--text-secondary);">Разрешите доступ к камере когда браузер попросит</p>
+    </div>
+
+    <video autoplay="true" id="webcam" style="width: 100%; max-width: 640px; height: auto; border-radius: 8px; border: 3px solid var(--accent-color); background: #666;"></video>
+
+    <div style="margin-top: 15px; text-align: center;">
+        <button class="toolbar-btn" onclick="captureImage()" style="background: var(--success-color); margin: 5px;">
+            <i class="fas fa-camera"></i>
+            <span>Снять фото</span>
+        </button>
+        <button class="toolbar-btn" onclick="stopWebcam()" style="background: var(--danger-color); margin: 5px;">
+            <i class="fas fa-stop"></i>
+            <span>Выключить камеру</span>
+        </button>
+    </div>
+</div>
+
+            <!-- Loading Spinner -->
+            <div class="loading-spinner" id="loadingSpinner"></div>
+
+            <!-- Image Comparison -->
+            <div class="image-comparison" id="imageComparison" style="display: none;">
+                <div class="image-container">
+                    <h3 data-lang="en">Original Image</h3>
+                    <h3 data-lang="ru" style="display: none;">Оригинал</h3>
+                    <img id="originalImage" class="image-preview" src="" alt="Original">
+                </div>
+                <div class="image-container">
+                    <h3 data-lang="en">Processed Image</h3>
+                    <h3 data-lang="ru" style="display: none;">Обработанное</h3>
+                    <div style="position: relative;">
+                        <img id="processedImage" class="image-preview" src="" alt="Processed">
+                        <canvas id="drawingCanvas" class="drawing-canvas"></canvas>
+                        <div id="previewOverlay" class="preview-overlay"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Prediction Result -->
+            <div class="prediction-result" id="predictionResult" style="display: none;">
+    <h3 data-lang="en"><i class="fas fa-robot"></i> AI Prediction</h3>
+    <h3 data-lang="ru" style="display: none;"><i class="fas fa-robot"></i> AI Предсказание</h3>
+    <div id="predictionContent">
+        <p data-lang="en">Classification is disabled</p>
+        <p data-lang="ru" style="display: none;">Классификация отключена</p>
+    </div>
+</div>
+
+            <!-- History -->
+            <div class="prediction-result" id="historySection" style="display: none;">
+                <h3 data-lang="en"><i class="fas fa-history"></i> History</h3>
+                <h3 data-lang="ru" style="display: none;"><i class="fas fa-history"></i> История</h3>
+                <div class="history-items" id="historyItems"></div>
+            </div>
+        </main>
+
+        <!-- Toolbar -->
+        <footer class="toolbar">
+            <button class="toolbar-btn" onclick="undo()" id="undoBtn" disabled>
+                <i class="fas fa-undo"></i>
+                <span data-lang="en">Undo</span>
+                <span data-lang="ru" style="display: none;">Назад</span>
+            </button>
+            <button class="toolbar-btn" onclick="redo()" id="redoBtn" disabled>
+                <i class="fas fa-redo"></i>
+                <span data-lang="en">Redo</span>
+                <span data-lang="ru" style="display: none;">Вперед</span>
+            </button>
+            <button class="toolbar-btn" onclick="applyChain()">
+                <i class="fas fa-link"></i>
+                <span data-lang="en">Apply Chain</span>
+                <span data-lang="ru" style="display: none;">Применить цепь</span>
+            </button>
+            <button class="toolbar-btn" onclick="clearChain()">
+                <i class="fas fa-unlink"></i>
+                <span data-lang="en">Clear Chain</span>
+                <span data-lang="ru" style="display: none;">Очистить цепь</span>
+            </button>
+        </footer>
+    </div>
+
+    <!-- Modals -->
+    <div id="transformModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="transformTitle" data-lang="en">Transform</h3>
+                <h3 id="transformTitleRu" data-lang="ru" style="display: none;">Трансформация</h3>
+                <button class="modal-close" onclick="closeModal('transformModal')">&times;</button>
+            </div>
+            <div id="transformContent"></div>
+        </div>
+    </div>
+
+    <div id="drawingModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="drawingTitle" data-lang="en">Draw Shape</h3>
+                <h3 id="drawingTitleRu" data-lang="ru" style="display: none;">Рисование</h3>
+                <button class="modal-close" onclick="closeModal('drawingModal')">&times;</button>
+            </div>
+            <div id="drawingContent"></div>
+        </div>
+    </div>
+
+    <div id="edgeDetectionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 data-lang="en">Edge Detection</h3>
+                <h3 data-lang="ru" style="display: none;">Детекция границ</h3>
+                <button class="modal-close" onclick="closeModal('edgeDetectionModal')">&times;</button>
+            </div>
+            <div class="tool-grid">
+                <button class="tool-btn" onclick="applyEdgeDetection('canny')">
+                    <span data-lang="en">Canny</span>
+                    <span data-lang="ru" style="display: none;">Кэнни</span>
+                </button>
+                <button class="tool-btn" onclick="applyEdgeDetection('sobel')">
+                    <span data-lang="en">Sobel</span>
+                    <span data-lang="ru" style="display: none;">Собель</span>
+                </button>
+                <button class="tool-btn" onclick="applyEdgeDetection('laplacian')">
+                    <span data-lang="en">Laplacian</span>
+                    <span data-lang="ru" style="display: none;">Лаплас</span>
+                </button>
+                <button class="tool-btn" onclick="applyEdgeDetection('prewitt')">
+                    <span data-lang="en">Prewitt</span>
+                    <span data-lang="ru" style="display: none;">Превитт</span>
+                </button>
+            </div>
+            <div class="slider-group" style="margin-top: 20px;">
+                <div class="slider-label">
+                    <span data-lang="en">Threshold 1</span>
+                    <span data-lang="ru" style="display: none;">Порог 1</span>
+                    <span id="threshold1Value">100</span>
+                </div>
+                <input type="range" class="slider" id="threshold1" min="1" max="255" value="100">
+            </div>
+            <div class="slider-group">
+                <div class="slider-label">
+                    <span data-lang="en">Threshold 2</span>
+                    <span data-lang="ru" style="display: none;">Порог 2</span>
+                    <span id="threshold2Value">200</span>
+                </div>
+                <input type="range" class="slider" id="threshold2" min="1" max="255" value="200">
+            </div>
+        </div>
+    </div>
+
+    <div id="advancedColorPicker" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 data-lang="en">Color Picker</h3>
+                <h3 data-lang="ru" style="display: none;">Выбор цвета</h3>
+                <button class="modal-close" onclick="closeModal('advancedColorPicker')">&times;</button>
+            </div>
+            <div class="advanced-color-picker">
+                <div class="color-wheel-container" id="colorWheel"></div>
+                <div class="rainbow-gradient" id="rainbowGradient"></div>
+                <div class="color-inputs">
+                    <input type="text" class="color-input" id="colorHexAdvanced" placeholder="#FFFFFF" value="#FFFFFF">
+                    <input type="number" class="color-input" id="brushSizeAdvanced" placeholder="Size" value="5" min="1" max="50">
+                </div>
+                <div class="brush-preview" id="brushPreviewAdvanced"></div>
+                <button class="toolbar-btn" onclick="closeModal('advancedColorPicker')" style="width: 100%; margin-top: 15px;">
+                    <span data-lang="en">Apply Color</span>
+                    <span data-lang="ru" style="display: none;">Применить цвет</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
