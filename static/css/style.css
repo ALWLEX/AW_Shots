@@ -41,7 +41,6 @@ body {
     height: 100vh;
 }
 
-/* Header */
 .header {
     grid-area: header;
     background: var(--secondary-bg);
@@ -82,7 +81,6 @@ body {
     border-color: var(--accent-color);
 }
 
-/* Sidebar */
 .sidebar {
     grid-area: sidebar;
     background: var(--secondary-bg);
@@ -140,7 +138,6 @@ body {
     border-color: var(--accent-color);
 }
 
-/* Color Picker */
 .color-picker-container {
     margin-top: 10px;
 }
@@ -171,7 +168,6 @@ body {
     font-size: 0.8rem;
 }
 
-/* Advanced Color Picker */
 .advanced-color-picker {
     margin-top: 15px;
 }
@@ -208,7 +204,6 @@ body {
     background: var(--tertiary-bg);
 }
 
-/* Sliders */
 .slider-group {
     margin-bottom: 15px;
 }
@@ -239,7 +234,6 @@ body {
     cursor: pointer;
 }
 
-/* Main Content */
 .main-content {
     grid-area: main;
     background: var(--primary-bg);
@@ -325,7 +319,6 @@ body {
     z-index: 10;
 }
 
-/* Prediction Result */
 .prediction-result {
     background: var(--secondary-bg);
     border-radius: 8px;
@@ -348,7 +341,6 @@ body {
     border-radius: 10px;
 }
 
-/* Toolbar */
 .toolbar {
     grid-area: toolbar;
     background: var(--secondary-bg);
@@ -388,7 +380,6 @@ body {
     border-color: var(--border-color);
 }
 
-/* Modal */
 .modal {
     display: none;
     position: fixed;
@@ -449,7 +440,6 @@ body {
     font-size: 0.9rem;
 }
 
-/* Webcam */
 .webcam-container {
     margin-top: 20px;
     text-align: center;
@@ -486,7 +476,6 @@ body {
     border-color: var(--accent-color);
 }
 
-/* Real-time Preview Overlay */
 .preview-overlay {
     position: absolute;
     top: 0;
@@ -509,7 +498,6 @@ body {
     background: rgba(67, 181, 129, 0.1);
 }
 
-/* Loading Animation */
 .loading-spinner {
     display: none;
     width: 40px;
@@ -526,7 +514,6 @@ body {
     100% { transform: rotate(360deg); }
 }
 
-/* Responsive */
 @media (max-width: 768px) {
     .app-container {
         grid-template-areas:
@@ -546,7 +533,6 @@ body {
     }
 }
 
-/* Animations */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
@@ -556,7 +542,6 @@ body {
     animation: fadeIn 0.3s ease;
 }
 
-/* Scrollbar */
 ::-webkit-scrollbar {
     width: 6px;
 }
@@ -574,7 +559,6 @@ body {
     background: var(--accent-color);
 }
 
-/* Toggle Switches */
 .toggle-switch {
     position: relative;
     display: inline-block;
@@ -626,4 +610,5 @@ input:checked + .toggle-slider:before {
     gap: 10px;
     margin-bottom: 10px;
     font-size: 0.8rem;
+
 }
