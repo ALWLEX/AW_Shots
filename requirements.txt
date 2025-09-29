@@ -1,0 +1,10 @@
+flask==2.3.3
+opencv-python==4.8.1.78
+numpy==1.24.3
+scikit-learn==1.3.0
+scikit-image==0.21.0
+imutils==0.5.4
+tensorflow==2.13.0
+Pillow==10.0.0
+inference-sdk
+requests==2.31.0
