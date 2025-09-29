@@ -9,7 +9,6 @@
 </head>
 <body>
     <div class="app-container">
-        <!-- Header -->
         <header class="header">
             <div class="logo">
                 <i class="fas fa-camera"></i>
@@ -22,9 +21,7 @@
             </div>
         </header>
 
-        <!-- Sidebar -->
         <aside class="sidebar">
-            <!-- File Operations -->
             <div class="sidebar-section">
                 <div class="section-title" data-lang="en">File</div>
                 <div class="section-title" data-lang="ru" style="display: none;">Файл</div>
@@ -52,7 +49,6 @@
                 </div>
             </div>
 
-            <!-- Tools -->
             <div class="sidebar-section">
                 <div class="section-title" data-lang="en">Tools</div>
                 <div class="section-title" data-lang="ru" style="display: none;">Инструменты</div>
@@ -70,7 +66,6 @@
                 </div>
             </div>
 
-            <!-- Drawing -->
             <div class="sidebar-section">
                 <div class="section-title" data-lang="en">Drawing</div>
                 <div class="section-title" data-lang="ru" style="display: none;">Рисование</div>
@@ -108,7 +103,6 @@
                 </div>
             </div>
 
-            <!-- Adjustments -->
             <div class="sidebar-section">
                 <div class="section-title" data-lang="en">Adjustments</div>
                 <div class="section-title" data-lang="ru" style="display: none;">Коррекции</div>
@@ -138,7 +132,6 @@
                 </div>
             </div>
 
-            <!-- Filters -->
             <div class="sidebar-section">
                 <div class="section-title" data-lang="en">Filters & Effects</div>
                 <div class="section-title" data-lang="ru" style="display: none;">Фильтры и Эффекты</div>
@@ -181,7 +174,6 @@
                 </div>
             </div>
 
-            <!-- Transform -->
             <div class="sidebar-section">
                 <div class="section-title" data-lang="en">Transform</div>
                 <div class="section-title" data-lang="ru" style="display: none;">Трансформация</div>
@@ -214,7 +206,6 @@
                 </div>
             </div>
 
-            <!-- AI Tools -->
             <div class="sidebar-section">
     <div class="section-title" data-lang="en">AI Tools</div>
     <div class="section-title" data-lang="ru" style="display: none;">AI Инструменты</div>
@@ -244,9 +235,7 @@
 </div>
         </aside>
 
-        <!-- Main Content -->
         <main class="main-content">
-            <!-- Upload Section -->
             <div class="upload-section" id="uploadArea" onclick="openFilePicker()">
                 <i class="fas fa-cloud-upload-alt"></i>
                 <h3 data-lang="en">Click or drag & drop to upload image</h3>
@@ -256,7 +245,6 @@
                 <input type="file" id="fileInput" accept="image/*" style="display: none;">
             </div>
 
-          <!-- Webcam Section - Simple version -->
 <div class="webcam-container" id="webcamContainer" style="display: none;">
     <div style="text-align: center; margin-bottom: 15px;">
         <h4>📷 AW Shots Camera</h4>
@@ -277,10 +265,8 @@
     </div>
 </div>
 
-            <!-- Loading Spinner -->
             <div class="loading-spinner" id="loadingSpinner"></div>
 
-            <!-- Image Comparison -->
             <div class="image-comparison" id="imageComparison" style="display: none;">
                 <div class="image-container">
                     <h3 data-lang="en">Original Image</h3>
@@ -298,7 +284,6 @@
                 </div>
             </div>
 
-            <!-- Prediction Result -->
             <div class="prediction-result" id="predictionResult" style="display: none;">
     <h3 data-lang="en"><i class="fas fa-robot"></i> AI Prediction</h3>
     <h3 data-lang="ru" style="display: none;"><i class="fas fa-robot"></i> AI Предсказание</h3>
@@ -308,7 +293,6 @@
     </div>
 </div>
 
-            <!-- History -->
             <div class="prediction-result" id="historySection" style="display: none;">
                 <h3 data-lang="en"><i class="fas fa-history"></i> History</h3>
                 <h3 data-lang="ru" style="display: none;"><i class="fas fa-history"></i> История</h3>
@@ -316,7 +300,6 @@
             </div>
         </main>
 
-        <!-- Toolbar -->
         <footer class="toolbar">
             <button class="toolbar-btn" onclick="undo()" id="undoBtn" disabled>
                 <i class="fas fa-undo"></i>
@@ -341,7 +324,6 @@
         </footer>
     </div>
 
-    <!-- Modals -->
     <div id="transformModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -433,4 +415,5 @@
 
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
+
 </html>
