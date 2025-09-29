@@ -15,17 +15,14 @@ let currentTool = 'select';
 let faceDetectionEnabled = false;
 let faceZoomEnabled = false;
 
-// Image state management
 let imageStates = {
     current: null,
     history: [],
     historyIndex: -1
 };
 
-// Camera stream - ОДНА ЕДИНСТВЕННАЯ ДЕКЛАРАЦИЯ
 let cameraStream = null;
 
-// Initialize
 document.addEventListener('DOMContentLoaded', function() {
     initializeEventListeners();
     initializeAdvancedColorPicker();
@@ -33,7 +30,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function initializeEventListeners() {
-    // File input
     document.getElementById('fileInput').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
@@ -41,7 +37,6 @@ function initializeEventListeners() {
         }
     });
 
-    // Sliders with real-time preview
     document.getElementById('brightness').addEventListener('input', function() {
         document.getElementById('brightnessValue').textContent = this.value;
         if (currentImage) {
@@ -63,7 +58,6 @@ function initializeEventListeners() {
         }
     });
 
-    // Edge detection sliders
     document.getElementById('threshold1').addEventListener('input', function() {
         document.getElementById('threshold1Value').textContent = this.value;
     });
@@ -72,7 +66,6 @@ function initializeEventListeners() {
         document.getElementById('threshold2Value').textContent = this.value;
     });
 
-    // Color picker
     document.getElementById('colorHex').addEventListener('input', function() {
         const color = this.value;
         if (isValidHex(color)) {
@@ -81,12 +74,10 @@ function initializeEventListeners() {
         }
     });
 
-    // Brush size
     document.getElementById('brushSize').addEventListener('input', function() {
         updateBrushPreview();
     });
 
-    // Drag and drop
     const uploadArea = document.getElementById('uploadArea');
     uploadArea.addEventListener('dragover', function(e) {
         e.preventDefault();
@@ -113,21 +104,18 @@ function initializeEventListeners() {
         }
     });
 
-    // Image click for drawing
     const processedImage = document.getElementById('processedImage');
     processedImage.addEventListener('mousedown', startDrawing);
     processedImage.addEventListener('mousemove', draw);
     processedImage.addEventListener('mouseup', stopDrawing);
     processedImage.addEventListener('mouseleave', stopDrawing);
 
-    // Touch events for mobile
     processedImage.addEventListener('touchstart', handleTouchStart);
     processedImage.addEventListener('touchmove', handleTouchMove);
     processedImage.addEventListener('touchend', stopDrawing);
 }
 
 function initializeAdvancedColorPicker() {
-    // Create rainbow gradient
     const rainbow = document.getElementById('rainbowGradient');
     if (rainbow) {
         rainbow.style.background = 'linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet)';
@@ -143,10 +131,8 @@ function initializeAdvancedColorPicker() {
         });
     }
 
-    // Create color wheel
     const colorWheel = document.getElementById('colorWheel');
     if (colorWheel) {
-        // This would be implemented with canvas in a real application
         colorWheel.style.background = 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)';
         colorWheel.addEventListener('click', function(e) {
             const rect = this.getBoundingClientRect();
@@ -179,7 +165,6 @@ function initializeDrawingCanvas() {
     const processedImg = document.getElementById('processedImage');
 
     if (canvas && processedImg) {
-        // Функция для обновления размеров canvas
         const updateCanvasSize = () => {
             if (processedImg.offsetWidth > 0 && processedImg.offsetHeight > 0) {
                 canvas.width = processedImg.offsetWidth;
@@ -194,18 +179,14 @@ function initializeDrawingCanvas() {
             }
         };
 
-        // Обновляем размеры при загрузке изображения
         processedImg.onload = updateCanvasSize;
 
-        // Также обновляем при изменении размера
         window.addEventListener('resize', updateCanvasSize);
 
-        // Если изображение уже загружено
         if (processedImg.complete && processedImg.naturalWidth > 0) {
             updateCanvasSize();
         }
 
-        // Обработчики событий для рисования
         const setupEventListeners = () => {
             canvas.removeEventListener('mousedown', startDrawing);
             canvas.removeEventListener('mousemove', draw);
@@ -229,7 +210,6 @@ function initializeDrawingCanvas() {
     }
 }
 
-// Debounce function for real-time adjustments
 let adjustmentTimeout;
 function debouncedAdjustment(type, value) {
     clearTimeout(adjustmentTimeout);
@@ -238,17 +218,14 @@ function debouncedAdjustment(type, value) {
     }, 100);
 }
 
-// Language switching
 function switchLanguage(lang) {
     currentLanguage = lang;
 
-    // Update buttons
     document.querySelectorAll('.lang-btn').forEach(btn => {
         btn.classList.remove('active');
     });
     event.target.classList.add('active');
 
-    // Update text content
     document.querySelectorAll('[data-lang]').forEach(element => {
         if (element.getAttribute('data-lang') === lang) {
             element.style.display = '';
@@ -278,14 +255,12 @@ function getTranslation(key) {
     return translations[currentLanguage][key] || key;
 }
 
-// Image loading and management
 function loadImage(file) {
     const reader = new FileReader();
     reader.onload = function(e) {
         originalImage = e.target.result;
         currentImage = e.target.result;
 
-        // Reset history
         imageStates.history = [currentImage];
         imageStates.historyIndex = 0;
         updateHistoryButtons();
@@ -301,21 +276,17 @@ function displayImages() {
     document.getElementById('originalImage').src = originalImage;
     document.getElementById('processedImage').src = currentImage;
 
-    // Инициализируем canvas после загрузки изображения
     const processedImg = document.getElementById('processedImage');
     const canvas = document.getElementById('drawingCanvas');
 
     processedImg.onload = function() {
-        // Устанавливаем размер canvas равным размеру изображения
         canvas.width = processedImg.offsetWidth;
         canvas.height = processedImg.offsetHeight;
 
-        // Очищаем canvas
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
     };
 
-    // Если изображение уже загружено
     if (processedImg.complete) {
         processedImg.onload();
     }
@@ -391,7 +362,6 @@ async function checkCameraSupport() {
             return false;
         }
 
-        // Проверяем доступные устройства
         const devices = await navigator.mediaDevices.enumerateDevices();
         const videoDevices = devices.filter(device => device.kind === 'videoinput');
 
@@ -413,18 +383,15 @@ function startWebcam() {
     const webcamContainer = document.getElementById('webcamContainer');
     const uploadArea = document.getElementById('uploadArea');
 
-    // Проверяем поддержку как в примере
     if (navigator.mediaDevices.getUserMedia) {
         console.log('getUserMedia supported');
 
-        // Простой вызов как в рабочем примере
         navigator.mediaDevices.getUserMedia({ video: true })
             .then(function(stream) {
                 console.log('Camera access granted');
                 cameraStream = stream;
                 video.srcObject = stream;
 
-                // Показываем интерфейс камеры
                 webcamContainer.style.display = 'block';
                 uploadArea.style.display = 'none';
 
@@ -463,7 +430,6 @@ function stopWebcam() {
     const webcamContainer = document.getElementById('webcamContainer');
     const uploadArea = document.getElementById('uploadArea');
 
-    // Останавливаем поток как в примере из поста
     if (cameraStream) {
         var tracks = cameraStream.getTracks();
         for (var i = 0; i < tracks.length; i++) {
@@ -486,36 +452,28 @@ function captureImage() {
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
 
-    // Устанавливаем размеры
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
 
-    // Рисуем кадр
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    // Получаем изображение
     const imageData = canvas.toDataURL('image/png');
 
-    // Устанавливаем как текущее
     originalImage = imageData;
     currentImage = imageData;
 
-    // Сбрасываем историю
     imageStates.history = [currentImage];
     imageStates.historyIndex = 0;
 
-    // Показываем изображения
     displayImages();
     showMainInterface();
 
-    // Останавливаем камеру
     stopWebcam();
 
     console.log('AW Shots: Image captured from webcam');
 }
 
 
-// Image processing
 async function processImage(imageData, operation, parameters = {}) {
     showLoading(true);
     try {
@@ -537,7 +495,6 @@ async function processImage(imageData, operation, parameters = {}) {
             currentImage = 'data:image/jpeg;base64,' + result.processed_image;
             document.getElementById('processedImage').src = currentImage;
 
-            // Save to history for undo/redo
             saveToHistory();
 
             if (result.prediction && classificationEnabled) {
@@ -574,7 +531,6 @@ function displayPrediction(prediction) {
     `;
 }
 
-// Drawing functions
 function startDrawing(e) {
     if (currentTool !== 'brush') return;
 
@@ -582,7 +538,6 @@ function startDrawing(e) {
     const canvas = document.getElementById('drawingCanvas');
     const rect = canvas.getBoundingClientRect();
 
-    // Получаем координаты
     const clientX = e.clientX || (e.touches && e.touches[0].clientX);
     const clientY = e.clientY || (e.touches && e.touches[0].clientY);
 
@@ -599,14 +554,12 @@ function draw(e) {
     const ctx = canvas.getContext('2d');
     const rect = canvas.getBoundingClientRect();
 
-    // Получаем координаты
     const clientX = e.clientX || (e.touches && e.touches[0].clientX);
     const clientY = e.clientY || (e.touches && e.touches[0].clientY);
 
     const currentX = clientX - rect.left;
     const currentY = clientY - rect.top;
 
-    // Настраиваем стиль кисти
     const color = document.getElementById('colorHex').value;
     const rgb = hexToRgb(color);
     const brushSize = parseInt(document.getElementById('brushSize').value);
@@ -616,7 +569,6 @@ function draw(e) {
     ctx.lineJoin = 'round';
     ctx.lineCap = 'round';
 
-    // Рисуем линию
     ctx.beginPath();
     ctx.moveTo(lastX, lastY);
     ctx.lineTo(currentX, currentY);
@@ -634,7 +586,6 @@ function stopDrawing() {
 
     isDrawing = false;
 
-    // Сохраняем рисунок на изображение
     setTimeout(saveDrawingToImage, 100);
 }
 
@@ -643,32 +594,25 @@ function saveDrawingToImage() {
     const processedImg = document.getElementById('processedImage');
 
     if (processedImg.src && processedImg.src !== '') {
-        // Создаем временный canvas для объединения
         const tempCanvas = document.createElement('canvas');
         const tempCtx = tempCanvas.getContext('2d');
 
-        // Устанавливаем размеры как у оригинального изображения
         tempCanvas.width = processedImg.naturalWidth || processedImg.width;
         tempCanvas.height = processedImg.naturalHeight || processedImg.height;
 
-        // Рисуем оригинальное изображение
         tempCtx.drawImage(processedImg, 0, 0, tempCanvas.width, tempCanvas.height);
 
-        // Масштабируем и рисуем рисунок поверх
         const scaleX = tempCanvas.width / canvas.width;
         const scaleY = tempCanvas.height / canvas.height;
 
         tempCtx.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, tempCanvas.width, tempCanvas.height);
 
-        // Обновляем основное изображение
         currentImage = tempCanvas.toDataURL('image/png');
         processedImg.src = currentImage;
 
-        // Очищаем canvas для рисования
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Сохраняем в историю
         saveToHistory();
     }
 }
@@ -693,7 +637,6 @@ function handleTouchMove(e) {
     draw(mouseEvent);
 }
 
-// Shape dragging
 function startShapeDrag(e) {
     if (currentTool !== 'select') return;
 
@@ -710,7 +653,6 @@ function startShapeDrag(e) {
     };
 }
 
-// Operation applications
 function applyFilter(filter) {
     if (!currentImage) {
         alert(getTranslation('Please upload an image first'));
@@ -750,11 +692,9 @@ function applyEdgeDetection(type) {
     closeModal('edgeDetectionModal');
 }
 
-// Real-time preview functions
 function showRealTimePreview(operation, parameters) {
     if (!currentImage) return;
 
-    // Show preview overlay
     const preview = document.getElementById('previewOverlay');
     preview.innerHTML = '';
 
@@ -777,7 +717,6 @@ function showRealTimePreview(operation, parameters) {
     }
 }
 
-// Modal functions
 function showTransformModal(type) {
     const modal = document.getElementById('transformModal');
     const content = document.getElementById('transformContent');
@@ -833,7 +772,6 @@ function showTransformModal(type) {
     if (type === 'rotate') {
         document.getElementById('angleSlider').addEventListener('input', function() {
             document.getElementById('angleValue').textContent = this.value;
-            // Real-time rotation preview
             previewRotation(parseInt(this.value));
         });
     }
@@ -893,7 +831,6 @@ function closeModal(modalId) {
     document.getElementById(modalId).style.display = 'none';
 }
 
-// Specific operations
 function applyRotation() {
     const angle = parseInt(document.getElementById('angleSlider').value);
     processImage(currentImage, 'rotate', { value: angle });
@@ -955,27 +892,21 @@ function drawCircle() {
     closeModal('drawingModal');
 }
 
-// Real-time preview functions
 function previewRotation(angle) {
-    // This would send a preview request to the server
-    // For now, we'll just update a preview element
     const previewElement = document.getElementById('rotationPreview');
     if (previewElement) {
         previewElement.textContent = `Rotation: ${angle}°`;
     }
 }
 
-// Tool selection
 function selectTool(tool) {
     currentTool = tool;
 
-    // Update UI
     document.querySelectorAll('.tool-btn').forEach(btn => {
         btn.classList.remove('active');
     });
     event.target.classList.add('active');
 
-    // Update cursor
     const processedImage = document.getElementById('processedImage');
     if (tool === 'brush') {
         processedImage.style.cursor = 'crosshair';
@@ -986,7 +917,6 @@ function selectTool(tool) {
     }
 }
 
-// Utility functions
 function openFilePicker() {
     document.getElementById('fileInput').click();
 }
@@ -1047,7 +977,6 @@ function hsvToRgb(h, s, v) {
     return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
 }
 
-// Chain operations
 function addToChain(operation, parameters = {}) {
     operationChain.push({
         operation: operation,
@@ -1066,7 +995,6 @@ function applyChain() {
         return;
     }
 
-    // Apply all operations in chain
     operationChain.forEach(op => {
         processImage(currentImage, op.operation, op.parameters);
     });
@@ -1076,7 +1004,6 @@ function clearChain() {
     operationChain = [];
 }
 
-// AI Functions
 function toggleClassification() {
     fetch('/toggle_classification', {
         method: 'POST',
@@ -1095,7 +1022,6 @@ function toggleClassification() {
             btn.style.background = 'var(--success-color)';
             predictionDiv.style.display = 'block';
 
-            // Если есть изображение, делаем классификацию
             if (currentImage) {
                 processImage(currentImage, 'classify');
             }
@@ -1181,7 +1107,6 @@ function detectFaces() {
         return;
     }
 
-    // Используем отдельный endpoint для детекции лиц
     fetch('/detect_faces_only', {
         method: 'POST',
         headers: {
@@ -1213,7 +1138,6 @@ function zoomFace() {
         return;
     }
 
-    // Используем отдельный endpoint для зума лица
     fetch('/zoom_face_only', {
         method: 'POST',
         headers: {
@@ -1247,8 +1171,7 @@ function applyColorOverlay() {
 
     const color = document.getElementById('colorHex').value;
     const rgb = hexToRgb(color);
-    const alpha = 0.5; // Default alpha
-
+    const alpha = 0.5; 
     processImage(currentImage, 'color_overlay', {
         color: [rgb.r, rgb.g, rgb.b],
         alpha: alpha
@@ -1261,13 +1184,11 @@ function resetAll() {
         document.getElementById('processedImage').src = currentImage;
         processImage(originalImage, 'reset_chain');
 
-        // Reset history
         imageStates.history = [currentImage];
         imageStates.historyIndex = 0;
         updateHistoryButtons();
         updateHistoryDisplay();
 
-        // Reset sliders
         document.getElementById('brightness').value = 0;
         document.getElementById('contrast').value = 0;
         document.getElementById('saturation').value = 0;
@@ -1275,7 +1196,6 @@ function resetAll() {
         document.getElementById('contrastValue').textContent = '0';
         document.getElementById('saturationValue').textContent = '0';
 
-        // Clear drawing canvas
         const canvas = document.getElementById('drawingCanvas');
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -1296,5 +1216,4 @@ function saveImage() {
     link.click();
 }
 
-// Initialize brush preview
 updateBrushPreview();
