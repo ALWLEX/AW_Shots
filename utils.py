@@ -9,21 +9,16 @@ import colorsys
 def image_to_base64(image):
     """Convert OpenCV image to base64 string"""
     try:
-        # Проверяем тип изображения
         if image is None:
             raise ValueError("Image is None")
 
-        # Убеждаемся, что изображение в правильном формате
-        if len(image.shape) == 2:  # Grayscale
-            # Конвертируем grayscale в BGR
+        if len(image.shape) == 2: 
             image_bgr = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
             _, buffer = cv2.imencode('.jpg', image_bgr)
-        else:  # Color
-            # Проверяем количество каналов
-            if image.shape[2] == 4:  # RGBA
+        else: 
+            if image.shape[2] == 4: 
                 image_bgr = cv2.cvtColor(image, cv2.COLOR_RGBA2BGR)
-            elif image.shape[2] == 3:  # RGB или BGR
-                # Конвертируем из BGR в RGB для корректного отображения в браузере
+            elif image.shape[2] == 3: 
                 image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
                 _, buffer = cv2.imencode('.jpg', image_rgb)
             else:
@@ -34,7 +29,6 @@ def image_to_base64(image):
     except Exception as e:
         print(f"Error in image_to_base64: {e}")
         print(f"Image shape: {image.shape if image is not None else 'None'}")
-        # Возвращаем черное изображение как fallback
         black_image = np.zeros((100, 100, 3), dtype=np.uint8)
         _, buffer = cv2.imencode('.jpg', black_image)
         return base64.b64encode(buffer).decode('utf-8')
@@ -48,14 +42,12 @@ def base64_to_image(base64_string):
         image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
         if image is not None:
-            # Убеждаемся, что изображение в формате BGR (стандарт OpenCV)
             return image
         else:
             raise ValueError("Failed to decode image")
 
     except Exception as e:
         print(f"Error in base64_to_image: {e}")
-        # Return a default black image
         return np.zeros((100, 100, 3), dtype=np.uint8)
 
 
@@ -145,7 +137,7 @@ def create_rainbow_gradient(width=200, height=30):
     for x in range(width):
         hue = x / width
         r, g, b = hsv_to_rgb(hue, 1.0, 1.0)
-        gradient[:, x] = [b, g, r]  # OpenCV uses BGR
+        gradient[:, x] = [b, g, r] 
     return gradient
 
 
@@ -168,7 +160,7 @@ def create_color_wheel(size=200):
                 value = 1.0
 
                 r, g, b = hsv_to_rgb(hue, saturation, value)
-                wheel[y, x] = [b, g, r]  # OpenCV uses BGR
+                wheel[y, x] = [b, g, r] 
 
     return wheel
 
@@ -182,8 +174,9 @@ def apply_color_overlay(image, color, alpha=0.5):
 
 def create_brush_preview(size=50, color=(255, 255, 255), brush_size=10):
     """Create brush preview circle"""
-    preview = np.zeros((size, size, 4), dtype=np.uint8)  # RGBA
+    preview = np.zeros((size, size, 4), dtype=np.uint8)  
     center = size // 2
     cv2.circle(preview, (center, center), brush_size // 2, (*color, 255), -1)
     cv2.circle(preview, (center, center), brush_size // 2, (255, 255, 255, 255), 1)
+
     return preview
