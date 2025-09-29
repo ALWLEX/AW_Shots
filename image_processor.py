@@ -25,7 +25,6 @@ class ImageTransformer:
         self.brush_size = 5
         self.last_mouse_pos = None
 
-        # Initialize Roboflow client for face detection
         try:
             self.roboflow_client = InferenceHTTPClient(
                 api_url="https://serverless.roboflow.com",
@@ -77,7 +76,6 @@ class ImageTransformer:
         return self.current_image
 
     def crop(self, y1, y2, x1, x2):
-        # Ensure coordinates are within bounds
         h, w = self.current_image.shape[:2]
         x1 = max(0, min(x1, w))
         x2 = max(0, min(x2, w))
@@ -123,7 +121,6 @@ class ImageTransformer:
         return self.current_image
 
     def create_shapes(self, shape_type, coordinates, color=(255, 255, 255), thickness=-1):
-        # Create a copy to draw on
         temp_image = self.current_image.copy()
 
         if shape_type == "rectangle":
@@ -173,20 +170,17 @@ class ImageTransformer:
 
         elif operation == "adjust_brightness":
             value = parameters.get('value', 0)
-            # Reset to original first to avoid stacking
             temp_image = self.original_image.copy() if self.original_image is not None else self.current_image.copy()
             self.current_image = cv2.convertScaleAbs(temp_image, alpha=1, beta=value)
 
         elif operation == "adjust_contrast":
             value = parameters.get('value', 0)
-            # Reset to original first to avoid stacking
             temp_image = self.original_image.copy() if self.original_image is not None else self.current_image.copy()
             alpha = 1 + value / 100.0
             self.current_image = cv2.convertScaleAbs(temp_image, alpha=alpha, beta=0)
 
         elif operation == "adjust_saturation":
             value = parameters.get('value', 0)
-            # Reset to original first to avoid stacking
             temp_image = self.original_image.copy() if self.original_image is not None else self.current_image.copy()
             hsv = cv2.cvtColor(temp_image, cv2.COLOR_BGR2HSV)
             h, s, v = cv2.split(hsv)
@@ -203,7 +197,6 @@ class ImageTransformer:
             self.current_image = cv2.cvtColor(final_hsv, cv2.COLOR_HSV2BGR)
 
         elif operation == "color_overlay":
-            # Add color overlay
             color = parameters.get('color', [255, 0, 0])
             alpha = parameters.get('alpha', 0.5)
             overlay = self.current_image.copy()
@@ -316,13 +309,10 @@ class ImageTransformer:
 
     def detect_faces(self):
         try:
-            # Используем Haar cascade для детекции лиц
             face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
-            # Конвертируем в grayscale для лучшей детекции
             gray = cv2.cvtColor(self.current_image, cv2.COLOR_BGR2GRAY)
 
-            # Детектируем лица с улучшенными параметрами
             faces = face_cascade.detectMultiScale(
                 gray,
                 scaleFactor=1.1,
@@ -331,15 +321,11 @@ class ImageTransformer:
                 flags=cv2.CASCADE_SCALE_IMAGE
             )
 
-            # Создаем копию для рисования
             result_image = self.current_image.copy()
 
-            # Рисуем прямоугольники вокруг лиц
             for i, (x, y, w, h) in enumerate(faces):
-                # Рисуем зеленый прямоугольник
                 cv2.rectangle(result_image, (x, y), (x + w, y + h), (0, 255, 0), 3)
 
-                # Добавляем текст с номером лица
                 cv2.putText(result_image, f"Face {i + 1}", (x, y - 10),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
 
@@ -353,14 +339,11 @@ class ImageTransformer:
 
     def zoom_face(self):
         try:
-            # Создаем копию текущего изображения
             image_copy = self.current_image.copy()
 
-            # Используем детектор лиц
             face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
             gray = cv2.cvtColor(image_copy, cv2.COLOR_BGR2GRAY)
 
-            # Детектируем лица
             faces = face_cascade.detectMultiScale(
                 gray,
                 scaleFactor=1.1,
@@ -369,17 +352,14 @@ class ImageTransformer:
             )
 
             if len(faces) > 0:
-                # Берем самое большое лицо
                 faces = sorted(faces, key=lambda x: x[2] * x[3], reverse=True)
                 x, y, w, h = faces[0]
 
                 print(f"Face detected at: x={x}, y={y}, w={w}, h={h}")
 
-                # Добавляем отступы (30% от размера лица)
                 padding_x = int(w * 0.3)
                 padding_y = int(h * 0.3)
 
-                # Рассчитываем координаты обрезки
                 x1 = max(0, x - padding_x)
                 y1 = max(0, y - padding_y)
                 x2 = min(image_copy.shape[1], x + w + padding_x)
@@ -387,10 +367,8 @@ class ImageTransformer:
 
                 print(f"Cropping to: x1={x1}, y1={y1}, x2={x2}, y2={y2}")
 
-                # Обрезаем изображение до области лица
                 cropped_face = image_copy[y1:y2, x1:x2]
 
-                # Если обрезанная область не пустая
                 if cropped_face.size > 0:
                     self.current_image = cropped_face
                     print(f"Zoomed face size: {self.current_image.shape}")
@@ -430,16 +408,12 @@ class ImageTransformer:
         if not self.drawing_mode:
             return self.current_image
 
-        # Draw line from start to end position
         cv2.line(self.current_image, start_pos, end_pos, self.brush_color, self.brush_size)
         return self.current_image
 
     def histogram_equalization(self):
-        # Convert to YUV color space
         yuv = cv2.cvtColor(self.current_image, cv2.COLOR_BGR2YUV)
-        # Equalize the histogram of the Y channel
         yuv[:, :, 0] = cv2.equalizeHist(yuv[:, :, 0])
-        # Convert back to BGR
         self.current_image = cv2.cvtColor(yuv, cv2.COLOR_YUV2BGR)
         return self.current_image
 
@@ -454,12 +428,10 @@ class ImageTransformer:
             amount = parameters.get('amount', 0.05)
             s_vs_p = parameters.get('s_vs_p', 0.5)
 
-            # Salt mode
             num_salt = np.ceil(amount * self.current_image.size * s_vs_p)
             coords = [np.random.randint(0, i - 1, int(num_salt)) for i in self.current_image.shape]
             self.current_image[coords[0], coords[1], :] = 255
 
-            # Pepper mode
             num_pepper = np.ceil(amount * self.current_image.size * (1. - s_vs_p))
             coords = [np.random.randint(0, i - 1, int(num_pepper)) for i in self.current_image.shape]
             self.current_image[coords[0], coords[1], :] = 0
@@ -515,4 +487,5 @@ class ImageTransformer:
 
 
 # Global transformer instance
+
 transformer = ImageTransformer()
