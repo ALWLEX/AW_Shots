@@ -73,8 +73,8 @@ pip --version
 
 ```bash
 # Клонируйте репозиторий
-git clone https://github.com/yourusername/aw-shots.git
-cd aw-shots
+git clone https://github.com/ALWLEX/AW_Shots.git
+gh repo clone ALWLEX/AW_Shots
 
 # Установите зависимости Python
 pip install -r requirements.txt
@@ -317,7 +317,7 @@ POST /toggle_drawing_mode  # Переключение режима рисова�
 
 Если у вас возникли вопросы или проблемы:
 
-- **Issues**: [GitHub Issues](https://github.com/yourusername/aw-shots/issues)
+- **Issues**: [GitHub Issues](https://github.com/ALWLEX/AW_Shots/issues)
 - **Email**: jebkoralav@gmail.com
 
 ---
