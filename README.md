@@ -1,7 +1,8 @@
-![logo](screenshots/logo.png)
+<img src="screenshots/logo.png" alt="Логотип" style="width: 50%; height: auto;">
+
 # AW Shots - Python OPENCV / NUMPY
 
-![Логотип AW Shots](screenshots/logo.png){: width="200" height="200"}
+![AW Shots Logo](screenshots/main-interface.jpg)
 
 **Веб-приложение для обработки изображений с искусственным интеллектом и расширенными функциями редактирования**
 
