@@ -10,12 +10,10 @@ from utils import base64_to_image, image_to_base64
 
 app = Flask(__name__)
 
-# Initialize classifiers and processors
 classifier = LogoClassifier("keras_Model.h5", "labels.txt")
 preprocessor = SimplePreprocessor(32, 32)
 transformer = ImageTransformer()
 
-# Global settings
 ENABLE_CLASSIFICATION = False
 
 
@@ -35,20 +33,16 @@ def process_image():
 
         print(f"Processing operation: {operation} with parameters: {parameters}")
 
-        # Convert base64 to OpenCV image
         if image_data.startswith('data:image'):
             image = base64_to_image(image_data.split(',')[1])
         else:
             image = base64_to_image(image_data)
 
-        # Reset transformer for new image or reset operation
         if operation == 'original' or operation == 'reset_chain' or transformer.current_image is None:
             transformer.set_image(image)
 
-        # Apply operations
         processed_image = apply_image_operations(operation, parameters)
 
-        # Делаем предсказание ТОЛЬКО если классификация включена И это не операции рисования/фильтров
         prediction = None
         if ENABLE_CLASSIFICATION and operation not in ['detect_faces', 'zoom_face_only', 'draw_rectangle', 'draw_circle', 'draw_line', 'draw_polygon', 'draw_text']:
             try:
@@ -66,7 +60,6 @@ def process_image():
                     'confidence': 0.0
                 }
 
-        # Convert back to base64
         processed_base64 = image_to_base64(processed_image)
 
         return jsonify({
@@ -89,7 +82,6 @@ def detect_faces_only():
         data = request.get_json()
         image_data = data['image']
 
-        # Convert base64 to OpenCV image
         if image_data.startswith('data:image'):
             image = base64_to_image(image_data.split(',')[1])
         else:
@@ -117,7 +109,6 @@ def zoom_face_only():
         data = request.get_json()
         image_data = data['image']
 
-        # Convert base64 to OpenCV image
         if image_data.startswith('data:image'):
             image = base64_to_image(image_data.split(',')[1])
         else:
@@ -215,17 +206,14 @@ def preview_operation():
         operation = data['operation']
         parameters = data.get('parameters', {})
 
-        # Convert base64 to OpenCV image
         if image_data.startswith('data:image'):
             image = base64_to_image(image_data.split(',')[1])
         else:
             image = base64_to_image(image_data)
 
-        # Set image if not set
         if transformer.current_image is None:
             transformer.set_image(image)
 
-        # Get preview based on operation type
         preview_image = None
 
         if operation == 'preview_shape':
@@ -275,23 +263,18 @@ def chain_operations():
         image_data = data['image']
         operations = data['operations']
 
-        # Convert base64 to OpenCV image
         if image_data.startswith('data:image'):
             image = base64_to_image(image_data.split(',')[1])
         else:
             image = base64_to_image(image_data)
 
-        # Set initial image
         transformer.set_image(image)
 
-        # Apply all operations in chain
         for op in operations:
             apply_image_operations(op['operation'], op.get('parameters', {}))
 
-        # Get final image
         processed_image = transformer.get_current_image()
 
-        # Convert back to base64
         processed_base64 = image_to_base64(processed_image)
 
         return jsonify({
@@ -315,7 +298,6 @@ def apply_image_operations(operation, parameters):
     elif operation == 'reset_chain':
         return transformer.reset()
 
-    # Geometric operations
     elif operation == 'translate':
         x = parameters.get('x', 0)
         y = parameters.get('y', 0)
@@ -346,7 +328,6 @@ def apply_image_operations(operation, parameters):
         y2 = parameters.get('y2', 100)
         return transformer.crop(y1, y2, x1, x2)
 
-    # Color operations
     elif operation == 'grayscale':
         return transformer.color_operations('grayscale')
 
@@ -392,7 +373,6 @@ def apply_image_operations(operation, parameters):
     elif operation == 'histogram_equalization':
         return transformer.histogram_equalization()
 
-    # Filter operations
     elif operation == 'blur':
         kernel_size = parameters.get('kernel_size', 15)
         return transformer.filter_operations('blur', {'kernel_size': kernel_size})
@@ -414,14 +394,12 @@ def apply_image_operations(operation, parameters):
     elif operation == 'bilateral_filter':
         return transformer.filter_operations('bilateral_filter')
 
-    # Edge detection operations
     elif operation.startswith('edge_'):
         method = operation.split('_')[1]
         threshold1 = parameters.get('threshold1', 100)
         threshold2 = parameters.get('threshold2', 200)
         return transformer.edge_detection(method, {'threshold1': threshold1, 'threshold2': threshold2})
 
-    # Morphological operations
     elif operation == 'erode':
         kernel_size = parameters.get('kernel_size', 3)
         return transformer.morphological_operations('erode', kernel_size)
@@ -442,14 +420,12 @@ def apply_image_operations(operation, parameters):
         kernel_size = parameters.get('kernel_size', 3)
         return transformer.morphological_operations('gradient', kernel_size)
 
-    # Threshold operations
     elif operation.startswith('threshold_'):
         method = operation.split('_')[1]
         threshold = parameters.get('threshold', 127)
         max_value = parameters.get('max_value', 255)
         return transformer.threshold_operations(method, threshold, max_value)
 
-    # Arithmetic operations
     elif operation == 'arithmetic_add':
         value = int(parameters.get('value', 10))
         return transformer.arithmetic_operations('add', value)
@@ -466,7 +442,6 @@ def apply_image_operations(operation, parameters):
         value = int(parameters.get('value', 2))
         return transformer.arithmetic_operations('divide', value)
 
-    # Shape operations
     elif operation == 'draw_rectangle':
         x1 = parameters.get('x1', 50)
         y1 = parameters.get('y1', 50)
@@ -504,7 +479,6 @@ def apply_image_operations(operation, parameters):
         thickness = parameters.get('thickness', 2)
         return transformer.create_shapes('text', [text, position, font_scale], color, thickness)
 
-    # Bitwise operations
     elif operation == 'bitwise_and':
         shape_type = parameters.get('shape_type', 'rectangle')
         coordinates = parameters.get('coordinates', [[50, 50], [200, 200]])
@@ -523,7 +497,6 @@ def apply_image_operations(operation, parameters):
     elif operation == 'bitwise_not':
         return transformer.bitwise_operations('not')
 
-    # Noise operations
     elif operation == 'gaussian_noise':
         mean = parameters.get('mean', 0)
         std = parameters.get('std', 25)
@@ -540,7 +513,6 @@ def apply_image_operations(operation, parameters):
     elif operation == 'speckle_noise':
         return transformer.noise_operations('speckle_noise')
 
-    # AI operations
     elif operation == 'detect_faces':
         return transformer.detect_faces()
 
@@ -551,4 +523,5 @@ def apply_image_operations(operation, parameters):
 if __name__ == '__main__':
     print("🎯 AW Shots запущен на http://localhost:5000")
     print("📷 Камера будет работать только на localhost!")
+
     app.run(debug=True, host='127.0.0.1', port=5000)
