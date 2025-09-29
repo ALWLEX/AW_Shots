@@ -1,4 +1,4 @@
-<img src="screenshots/logo.png" alt="Логотип" style="width: 50%; height: auto;">
+<img src="screenshots/logo.png" alt="Логотип" style="width: 30%; height: auto;">
 
 # AW Shots - Python OPENCV / NUMPY
 
